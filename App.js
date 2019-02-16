@@ -1,19 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MapView } from 'expo';
-import { Marker } from 'react-native-maps'
+import Map from './components/Map'
+import SetMarker from './components/SetMarker'
 
 export default class App extends React.Component {
   constructor(props){
     super(props);
     this.setState = this.setState.bind(this);
     this.state = {
-      region: {
-        latitude: 41.5075,
-        longitude: -81.60844,
-        latitudeDelta: 0.007,
-        longitudeDelta: 0.019,
-      },
+      // region: {
+      //   latitude: 41.5075,
+      //   longitude: -81.60844,
+      //   latitudeDelta: 0.007,
+      //   longitudeDelta: 0.019,
+      // },
       markers: [{
         latlng: {
           latitude: 41.5075,
@@ -41,19 +42,19 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <MapView
-        region = {this.state.region}
-        //onRegionChange = {this.onRegionChange}
-        style={{ flex: 1 }}
-      >
-      {this.state.markers.map(marker => (
-        <Marker
-          coordinate={marker.latlng}
-          title={marker.title}
-          description={marker.description}
-        />
-      ))}
-      </MapView>
+      // <MapView
+      //   region = {this.state.region}
+      //   onRegionChange = {this.onRegionChange}
+      //   style={{ flex: 1 }}
+      // >
+      // {this.state.markers.map(marker => (
+      //   <Marker
+      //     coordinate={marker.latlng}
+      //     title={marker.title}
+      //     description={marker.description}
+      //   />
+      // ))}
+      < Map />
     );
   }
 
