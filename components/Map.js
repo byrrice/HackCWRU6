@@ -62,13 +62,12 @@ class Map extends React.Component {
     };
   }
 
-  addEvent(form, location) {
+  addEvent(form) {
     firebase
       .database()
       .ref("events/")
       .push({
-        form,
-        location
+        form
       })
       .then(data => {
         console.log("addEventItself:" + data);
@@ -87,16 +86,22 @@ class Map extends React.Component {
         snapshot.forEach(
           function(childSnapshot) {
             var childData = childSnapshot.val();
+            formObj = Object.keys(childData.form).map(function(key) {
+              return childData.form[key];
+            });
             this.setState({
               all_markers: [
                 ...this.state.all_markers,
                 {
-                  coordinate: childData.location,
-                  forminfo: childData.form
+                  category: formObj[0],
+                  coordinate: formObj[1],
+                  description: formObj[2],
+                  group: formObj[3],
+                  name: formObj[4],
+                  users: formObj[5]
                 }
               ]
             });
-            console.log(childData.form);
           }.bind(this)
         );
       }.bind(this)
@@ -126,8 +131,8 @@ class Map extends React.Component {
   }
 
   onSubmit(form) {
-    //form["coordinate"] = this.state.markers[0].coordinate
-    this.addEvent(form, this.state.markers[0].coordinate);
+    form["coordinate"] = this.state.markers[0].coordinate;
+    this.addEvent(form);
     this.setModalVisible(false);
     this.setState({ markerButtonPressed: false });
     this.readMarkers();
