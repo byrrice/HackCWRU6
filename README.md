@@ -1,4 +1,5 @@
 # JustPinCase
+Project for Hack CWRU 6
 ## Created by: Chris Hadiono, Dennis Lin, Isaac Ng, Rahul Pokharna
 
 JustPinCase is an iOS app that utilizes the Google Maps API to help Case Western Students be able to better visualize events happening around campus by showing various pins on a map. It uses Firebase as its database and react-native (using expo) as its frontend.  
