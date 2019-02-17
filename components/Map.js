@@ -147,7 +147,9 @@ class Map extends React.Component {
   }
 
   markerClick() {
-    Alert.alert("You wish this button worked");
+    Alert.alert(
+      "Brings up popup with more detailed information about the event!"
+    );
   }
   render() {
     //this.setState({ retrieved_markers: true });
@@ -240,6 +242,32 @@ class Map extends React.Component {
               style={styles.bubble}
             >
               <Text> Create Marker </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.bubble}
+              onPress={() =>
+                this.state.all_markers.map(marker => (
+                  <Marker
+                    title={marker.name}
+                    description={marker.description}
+                    coordinate={marker.coordinate}
+                  >
+                    <MapView.Callout>
+                      <TouchableHighlight
+                        onPress={() => this.markerClick()}
+                        underlayColor="white"
+                      >
+                        <View style={styles.calloutText}>
+                          <Text>{marker.name}</Text>
+                          <Text>{marker.description}</Text>
+                        </View>
+                      </TouchableHighlight>
+                    </MapView.Callout>
+                  </Marker>
+                ))
+              }
+            >
+              <Text> Filter </Text>
             </TouchableOpacity>
           </View>
         </View>

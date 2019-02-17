@@ -82,7 +82,7 @@ export class Form extends React.Component {
           </Input>
           <Input label="Category">
             <DropDownInput
-              items={["Sports", "Social", "Free Food"]}
+              items={["Sports", "Social", "Free Food", "Danger Zone"]}
               value={this.state.category}
               style={{ height: 50, width: 100 }}
               onChange={this.changeFormState("category")}
