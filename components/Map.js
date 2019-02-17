@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { MapView } from "expo";
 import { Marker, ProviderPropType } from "react-native-maps";
-import ApiKeys from "./constants/ApiKeys";
 import * as firebase from "firebase";
 
 // import {createStackNavigator, createAppContainer} from 'react-navigation';
@@ -44,9 +43,10 @@ class Map extends React.Component {
     super(props);
     this.setState = this.setState.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.readMarkers = this.readMarkers.bind(this);
     this.onRegionChange = this.onRegionChange.bind(this);
-    this.componentDidMount = this.componentDidMount.bind(this);
     this.addEvent = this.addEvent.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
     this.state = {
       region: {
         latitude: LATITUDE,
@@ -55,69 +55,56 @@ class Map extends React.Component {
         longitudeDelta: LONGITUDE_DELTA
       },
       markers: [],
+      all_markers: [],
       markerButtonPressed: false,
-      modalVisible: false
+      modalVisible: false,
+      retrieved_markers: false
     };
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        console.log("wokeeey");
-        console.log(position.coords.latitude);
-        this.setState({
-          region: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA
-          }
-          // latitudeDelta: this.state.region.latitudeDelta,
-          // longitudeDelta: this.state.region.longitudeDelta
-        });
-      },
-      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
-    );
   }
 
-  addEvent(latitude) {
+  addEvent(form, location) {
     firebase
       .database()
-      .ref("users/")
-      .set({
-        latitude
+      .ref("events/")
+      .push({
+        form,
+        location
       })
       .then(data => {
-        console.log("data ", data);
+        console.log("addEventItself:" + data);
       });
   }
 
   componentDidMount() {
-    this.addEvent(1.0);
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        console.log("wokeeey");
-        console.log(position.coords.latitude);
-        this.setState({
-          region: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-            // latitudeDelta: this.state.region.latitudeDelta,
-            // longitudeDelta: this.state.region.longitudeDelta
-          }
-          // latitudeDelta: this.state.region.latitudeDelta,
-          // longitudeDelta: this.state.region.longitudeDelta
-        });
-        let tempCoords = {
-          latitude: Number(position.coords.latitude),
-          longitude: Number(position.coords.longitude)
-        };
-        this._map.animateToCoordinate(tempCoords, 1);
-      },
-      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
+    this.readMarkers();
+  }
+
+  readMarkers() {
+    var leadsRef = firebase.database().ref("events");
+    leadsRef.once(
+      "value",
+      function(snapshot) {
+        snapshot.forEach(
+          function(childSnapshot) {
+            var childData = childSnapshot.val();
+            this.setState({
+              all_markers: [
+                ...this.state.all_markers,
+                {
+                  coordinate: childData.location,
+                  forminfo: childData.form
+                }
+              ]
+            });
+            console.log(childData.form);
+          }.bind(this)
+        );
+      }.bind(this)
     );
   }
 
   onRegionChange(region) {
     this.setState({ region });
-    console.log(region);
   }
 
   setModalVisible(visible) {
@@ -127,7 +114,7 @@ class Map extends React.Component {
   onMapPress(e) {
     this.setState({
       markers: [
-        // ...this.state.markers,
+        //...this.state.markers,
         {
           coordinate: e.nativeEvent.coordinate,
           key: id++,
@@ -136,18 +123,18 @@ class Map extends React.Component {
       ],
       modalVisible: true
     });
-    console.log("hello");
   }
 
   onSubmit(form) {
-    console.log(form);
-    addEvent(form);
+    //form["coordinate"] = this.state.markers[0].coordinate
+    this.addEvent(form, this.state.markers[0].coordinate);
     this.setModalVisible(false);
-    this.markerButtonPressed = false;
+    this.setState({ markerButtonPressed: false });
+    this.readMarkers();
   }
 
   render() {
-    console.log("hello");
+    //this.setState({ retrieved_markers: true });
     if (this.state.markerButtonPressed) {
       return (
         <View style={styles.container}>
@@ -157,7 +144,6 @@ class Map extends React.Component {
             initialRegion={this.state.region}
             onPress={e => this.onMapPress(e)}
             showsUserLocation
-            showsMyLocationButton
           >
             {this.state.markers.map(marker => (
               <Marker
@@ -201,6 +187,7 @@ class Map extends React.Component {
         </View>
       );
     } else {
+      //this.readMarkers();
       return (
         <View style={styles.container}>
           <MapView
@@ -211,12 +198,8 @@ class Map extends React.Component {
             showsUserLocation
             showsMyLocationButton
           >
-            {this.state.markers.map(marker => (
-              <Marker
-                key={marker.key}
-                coordinate={marker.coordinate}
-                pinColor={marker.color}
-              />
+            {this.state.all_markers.map(marker => (
+              <Marker coordinate={marker.coordinate} />
             ))}
           </MapView>
           <View style={styles.buttonContainer}>

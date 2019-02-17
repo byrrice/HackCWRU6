@@ -42,20 +42,6 @@ export class RegisterForm extends React.Component {
     return (
       <ScrollView style={{ marginTop: 30 }}>
         <View style={styles.formContainer}>
-          <Input label="First Name" error="not found">
-            <TextInput
-              placeholder="John"
-              value={this.state.first}
-              onChangeText={this.changeFormState("first")}
-            />
-          </Input>
-          <Input label="Last Name">
-            <TextInput
-              placeholder="Smith"
-              value={this.state.last}
-              onChangeText={this.changeFormState("last")}
-            />
-          </Input>
           <Input label="Email">
             <TextInput
               placeholder="jks23@case.edu"
