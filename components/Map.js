@@ -10,46 +10,43 @@ import {
 } from "react-native";
 import { MapView } from "expo";
 import { Marker, ProviderPropType } from "react-native-maps";
-import {
-  FormLabel,
-  FormInput,
-  FormValidationMessage
-} from "react-native-elements";
+import ApiKeys from "./constants/ApiKeys";
+import * as firebase from "firebase";
 
 // import {createStackNavigator, createAppContainer} from 'react-navigation';
 import EventForm from "./EventForm";
 import { Form } from "./Form";
 
 const { width, height } = Dimensions.get("window");
-
+const firebaseConfig = {
+  apiKey: "AIzaSyAomUzviEzRitHhTK1IR9LJbfhU6_9CzBk",
+  authDomain: "justpincase-c0785.firebaseapp.com",
+  databaseURL: "https://justpincase-c0785.firebaseio.com",
+  projectId: "justpincase-c0785",
+  storageBucket: "justpincase-c0785.appspot.com",
+  messagingSenderId: "357323316713"
+};
 const ASPECT_RATIO = width / height;
 const LATITUDE = 41.5075;
 const LONGITUDE = -81.60844;
 const LATITUDE_DELTA = 0.007;
 const LONGITUDE_DELTA = 0.01; //LATITUDE_DELTA * ASPECT_RATIO;
 let id = 0;
-
+if (!firebase.app.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 function randomColor() {
   return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
-
-// const MainNavigator = createStackNavigator({
-//   Map: {screen: MapScreen},
-//   CreateEvent: {screen: EventScreen},
-// });
-
-// const Event = t.struct({
-//   Name: t.String,
-//   StartTime: t.Tim,
-//   password: t.String,
-//   terms: t.Boolean
-// });
 
 class Map extends React.Component {
   constructor(props) {
     super(props);
     this.setState = this.setState.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onRegionChange = this.onRegionChange.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+    this.addEvent = this.addEvent.bind(this);
     this.state = {
       region: {
         latitude: LATITUDE,
@@ -61,6 +58,66 @@ class Map extends React.Component {
       markerButtonPressed: false,
       modalVisible: false
     };
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log("wokeeey");
+        console.log(position.coords.latitude);
+        this.setState({
+          region: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+          }
+          // latitudeDelta: this.state.region.latitudeDelta,
+          // longitudeDelta: this.state.region.longitudeDelta
+        });
+      },
+      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
+    );
+  }
+
+  addEvent(latitude) {
+    firebase
+      .database()
+      .ref("users/")
+      .set({
+        latitude
+      })
+      .then(data => {
+        console.log("data ", data);
+      });
+  }
+
+  componentDidMount() {
+    this.addEvent(1.0);
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log("wokeeey");
+        console.log(position.coords.latitude);
+        this.setState({
+          region: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+            // latitudeDelta: this.state.region.latitudeDelta,
+            // longitudeDelta: this.state.region.longitudeDelta
+          }
+          // latitudeDelta: this.state.region.latitudeDelta,
+          // longitudeDelta: this.state.region.longitudeDelta
+        });
+        let tempCoords = {
+          latitude: Number(position.coords.latitude),
+          longitude: Number(position.coords.longitude)
+        };
+        this._map.animateToCoordinate(tempCoords, 1);
+      },
+      { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
+    );
+  }
+
+  onRegionChange(region) {
+    this.setState({ region });
+    console.log(region);
   }
 
   setModalVisible(visible) {
@@ -84,11 +141,13 @@ class Map extends React.Component {
 
   onSubmit(form) {
     console.log(form);
+    addEvent(form);
     this.setModalVisible(false);
     this.markerButtonPressed = false;
   }
 
   render() {
+    console.log("hello");
     if (this.state.markerButtonPressed) {
       return (
         <View style={styles.container}>
@@ -148,6 +207,9 @@ class Map extends React.Component {
             provider={this.props.provider}
             style={styles.map}
             initialRegion={this.state.region}
+            onRegionChange={this.onRegionChange}
+            showsUserLocation
+            showsMyLocationButton
           >
             {this.state.markers.map(marker => (
               <Marker

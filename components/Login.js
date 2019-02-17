@@ -1,4 +1,3 @@
-
 import { MapView } from "expo";
 import { Marker, ProviderPropType } from "react-native-maps";
 import {
@@ -8,28 +7,78 @@ import {
 } from "react-native-elements";
 
 import React from "react";
-import { StyleSheet, Text, TextInput, View, Button, Modal } from "react-native";
-import RegisterForm from './RegisterForm'
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Button,
+  Modal
+} from "react-native";
+import RegisterForm from "./RegisterForm";
+import Map from "./Map";
+import * as firebase from "firebase";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAomUzviEzRitHhTK1IR9LJbfhU6_9CzBk",
+  authDomain: "justpincase-c0785.firebaseapp.com",
+  databaseURL: "https://justpincase-c0785.firebaseio.com",
+  projectId: "justpincase-c0785",
+  storageBucket: "justpincase-c0785.appspot.com",
+  messagingSenderId: "357323316713"
+};
+firebase.initializeApp(firebaseConfig);
+
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.setState = this.setState.bind(this);
-    this.state = { email: "", password: "", errorMessage: null, modalVisible: false };
+    this.state = {
+      email: "",
+      password: "",
+      error: "",
+      modalVisible: false
+    };
   }
+
+  // onLoginPress() {
+  //   this.state({ error: "", loading: true });
+
+  //   const { email, password } = this.state;
+  //   firebase
+  //     .auth()
+  //     .signInWithEmailAndPassword(email, password)
+  //     .then(() => {
+  //       this.state({ error: "", loading: false });
+  //     })
+  //     .catch(() => {
+  //       this.state({ error: "authentication failed", loading: false });
+  //     });
+  // }
+
+  onSubmit = (email, password) => {
+    firebase.auth().createUserWithEmailAndPassword(email, password);
+    Alert.alert("You've signed up!");
+  };
+
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
-  handleLogin = () => {
-    // TODO: Firebase stuff...
-    console.log("handleLogin");
+
+  loginUser = (email, password) => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(function(user) {
+        Alert.alert("You've successfully logged in!");
+      });
   };
+
   render() {
     return (
       <View style={styles.container}>
         <Text>Login</Text>
-        {this.state.errorMessage && (
-          <Text style={{ color: "red" }}>{this.state.errorMessage}</Text>
-        )}
         <TextInput
           style={styles.textInput}
           autoCapitalize="none"
@@ -45,26 +94,29 @@ export default class Login extends React.Component {
           onChangeText={password => this.setState({ password })}
           value={this.state.password}
         />
-        <Button title="Login" onPress={this.handleLogin} />
+        <Button
+          title="Login"
+          onPress={() => this.loginUser(this.state.email, this.state.password)}
+        />
         <Button
           title="Don't have an account? Sign Up"
           onPress={() => this.setModalVisible(true)}
         />
-      <View style={styles.formContainer}>
-        <Modal
-          visible={this.state.modalVisible}
-          animationType="slide"
-          transparent={false}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <RegisterForm
-            onSubmit={this.onSubmit}
-            onCancel={() => this.setModalVisible(false)}
-          />
-        </Modal>
-      </View>
+        <View style={styles.formContainer}>
+          <Modal
+            visible={this.state.modalVisible}
+            animationType="slide"
+            transparent={false}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+            }}
+          >
+            <RegisterForm
+              onSubmit={this.onSubmit}
+              onCancel={() => this.setModalVisible(false)}
+            />
+          </Modal>
+        </View>
       </View>
     );
   }
@@ -81,6 +133,6 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     marginTop: 8,
-    textAlign: 'center'
+    textAlign: "center"
   }
 });
