@@ -11,5 +11,5 @@ Often times, students only become aware of events through Facebook or CampusGrou
 2. HeatMaps
 3. Interested/Not Going
 
-##Devpost Entry: 
+## Devpost Entry: 
 https://devpost.com/software/hackcwru6-s58zux
