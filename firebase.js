@@ -18,16 +18,16 @@ var setAda = usersRef.set({
   password: 'password'
 });
 
-//test tag
-var tagsRef = db.collection('tags').doc('party');
-var setAda = tagsRef.set({
-  icon: 'party.png',
-  name: 'party_tag'
-})
-var setAda = tagsRef.set({
-  icon: 'sports.png',
-  name: 'sports_tag'
-});
+// //test tag
+// var tagsRef = db.collection('tags').doc('party');
+// var setAda = tagsRef.set({
+//   icon: 'party.png',
+//   name: 'party_tag'
+// })
+// var setAda = tagsRef.set({
+//   icon: 'sports.png',
+//   name: 'sports_tag'
+// });
 
 //test group
 var groupsRef = db.collection('groups').doc('The Den by Dennis');
@@ -40,14 +40,13 @@ var setAda = groupsRef.set({
 var start_time = new Date(2019, 2, 18, 21, 0, 0, 0);
 var end_time = new Date(2019, 2, 18, 23, 0, 0, 0)
 // var timestamp1 = Timestamp.fromDate(ourbigd);
-var eventsRef = db.collection('events').doc('Game on Monday');
+var eventsRef = db.collection('events').doc('Game On Monday');
 var setAda = eventsRef.set({
   name: 'Game On Monday',
   description: 'IM League Game on Monday, be there!',
   start_time: admin.firestore.Timestamp.fromDate(start_time),
   end_time: admin.firestore.Timestamp.fromDate(end_time),
   location: new admin.firestore.GeoPoint(0, 42),
-  tags: ['sports_tag'],
   category: 'sport'
 });
 
@@ -57,11 +56,25 @@ var setAda = eventsRef.set({
 
 addEvent({"name":"Team Lunch", "description": "Let's go to lunch tgt!", 
 "start_time": new Date(2019, 2, 19, 12, 0, 0, 0), 
-"end_time": new Date(2019, 2, 19, 2, 0, 0, 0), 
+"end_time": new Date(2019, 2, 19, 14, 0, 0, 0), 
 "geo_location": new admin.firestore.GeoPoint(40.7308619, -73.9871558),
-"tags": "sports",
 "category": "sports"
 });
+
+addEvent({"name":"Reading the Great Gatsby", "description": "Read some books as a group!", 
+"start_time": new Date(2019, 2, 17, 16, 0, 0, 0), 
+"end_time": new Date(2019, 2, 17, 18, 0, 0, 0), 
+"geo_location": new admin.firestore.GeoPoint(41.504213, -81.609398),
+"category": "education"
+});
+
+addEvent({"name":"Lets take a swim", "description": "Hop into the lagoon!", 
+"start_time": new Date(2019, 2, 19, 1, 0, 0, 0), 
+"end_time": new Date(2019, 2, 19, 2, 0, 0, 0), 
+"geo_location": new admin.firestore.GeoPoint(41.506579, -81.611415),
+"category": "misc"
+});
+
 
 function addEvent(event) {
   var eventsRef = db.collection('events').doc(event.name);
@@ -71,7 +84,6 @@ function addEvent(event) {
     start_time: event.start_time,
     end_time: event.end_time,
     geo_location: event.geo_location,
-    tags: event.tags,
     category: event.category
   });
 }
@@ -91,7 +103,6 @@ addGroupEvent({"name":"TallBoys", "users": ["rkp43@case.edu"]},
 "start_time": new Date(2019, 2, 19, 12, 0, 0, 0), 
 "end_time": new Date(2019, 2, 19, 2, 0, 0, 0), 
 "geo_location": new admin.firestore.GeoPoint(40.7308619, -73.9871558),
-"tags": "sports",
 "category": "sports"
 });
 function addGroupEvent(group, event){
@@ -105,8 +116,10 @@ addGroupEvent({"name": "The Den by Dennis"}, {"name":"Game On Monday"})
 addGroupEvent({"name": "TallBoys"}, {"name":"Game On Monday"})
 
 addUserEvent({"email":"rkp43@case.edu"}, {"name":"Team Lunch"})
+addUserEvent({"email":"rkp43@case.edu"}, {"name":"Reading the Great Gatsby"})
+addUserEvent({"email":"dlin@test.com"}, {"name":"Lets take a swim"})
 function addUserEvent(user, event){
-  var userEventsRef = db.collection('user_events').doc(user.email, event.name);
+  var userEventsRef = db.collection('user_events').doc(user.email + ": " + event.name);
   var setAda = userEventsRef.set({
     userEmail: user.email,
     eventName: event.name
@@ -114,15 +127,27 @@ function addUserEvent(user, event){
 }
 
 
+function addUserGroup(user, groupName){
+  var userGroupRef = db.collection('user_groups').doc(groupName + ": " + user.email);
+  var setAda = userGroupRef.set({
+    userEmail: user.email,
+    groupName: groupName
+  });
+}
+
+addUserGroup({"email":"rkp43@case.edu"},"TallBoys")
+addUserGroup({"email":"rkp43@case.edu"},"The Den by Dennis")
+addUserGroup({"email":"dlin@test.com"},"The Den by Dennis")
+
 function findGroup(group){
   var groupRef = db.collection('groups').doc(group);
   var getGroup = groupRef.get()
     .then(doc => {
       if (! doc.exists) {
-        console.log('No such document!');
+        console.log('No such group!');
       }
       else {
-        console.log(doc.id, '=>', doc.data());
+        return doc.data().name;
       }
     })
     .catch(err => {
@@ -137,7 +162,8 @@ function findEvent(event) {
   var getEvent = eventRef.get()
     .then(doc => {
       if (! doc.exists) {
-        console.log('No such document!');
+        console.log('No such event! => ', event);
+
       }
       else {
         console.log(doc.id, '=>', doc.data());
@@ -151,6 +177,29 @@ function findEvent(event) {
 
 // findEvent('Team Lunch');
 
+function getAllEvents(){
+  var eventsRef = db.collection('events');
+  var eventList = []
+  var query = eventsRef.get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }
+      
+      snapshot.forEach(doc => {
+        // console.log(doc.id, '=>', doc.data());
+        var event = findEvent(doc.data().eventName);
+        console.log(event);
+        eventList.push(event);
+      });
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+    return {"events": "all events", "elements": eventList};
+}
+console.log(getAllEvents());
 
 function findGroupEvent(group_name, event_name){
   var groupEventRef = db.collection('group_events').doc(group_name + ": " + event_name);
@@ -160,7 +209,9 @@ function findGroupEvent(group_name, event_name){
         console.log('No such event/group pair!');
       }
       else {
-        console.log(findEvent(event_name));
+        var event = findEvent(event_name);
+        console.log("FIdnign group event: ", event);
+        return event;
       }
     });
 }
@@ -169,25 +220,103 @@ function findGroupEvent(group_name, event_name){
 // find events of group
 function findAllGroupEvents(group_name){
   var groupEventsRef = db.collection('group_events');
+  var eventList = []
   var query = groupEventsRef.where('groupName', '==', group_name).get()
     .then(snapshot => {
       if (snapshot.empty) {
         console.log('No matching documents.');
         return;
       }
+      
+      snapshot.forEach(doc => {
+        // console.log(doc.id, '=>', doc.data());
+        var event = findEvent(doc.data().eventName);
+        console.log(event);
+        eventList.push(event);
+      });
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+    return {"groupName": group_name, "elements": eventList};
+}
+// console.log(findAllGroupEvents('TallBoys'));
+
+function findUserEvents(user_email){
+  var userEventsRef = db.collection('user_events');
+  var query = userEventsRef.where('userEmail', '==', user_email).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No events for user.');
+        return;
+      }
 
       snapshot.forEach(doc => {
-        console.log(doc.id, '=>', findGroupEvent(group_name, doc.eventName), doc.eventName);
+        console.log(doc.id, '=>', doc.data());
+        return findEvent(doc.data().eventName);
       });
     })
     .catch(err => {
       console.log('Error getting documents', err);
   });
 }
-findAllGroupEvents('TallBoys');
+
+// findUserEvents("rkp43@case.edu");
+// findUserEvents("dlin@test.com");
+
+function findUserGroupEvents(user_email){
+  var userGroupRef = db.collection('user_groups');
+  var query = userGroupRef.where('userEmail', '==', user_email).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No groups for user.');
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        return findAllGroupEvents(doc.data().groupName);
+      });
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+  });
+}
+
+
+// find all events for user
+// filter out based on category (subquery)
+// somehow store it in JSON object
+
+function findUserEventsWithCategory(user_email, category){
+  var userEventsRef = db.collection('user_events');
+  var query = userEventsRef.where('userEmail', '==', user_email).where('userEmail', '==', user_email).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No events for user.');
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+        return findEvent(doc.data().eventName);
+      });
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+  });
+}
+
+// findUserGroupEvents('rkp43@case.edu');
+
+function findAllUserEvents(user_email){
+  findUserEvents(user_email);
+  findUserGroupEvents(user_email);
+}
+
+// findAllUserEvents('rkp43@case.edu');
+
 // AUTHETICATION FUNCTIONS
-
-
 function createUser(user) {
   admin.auth().createUser({
     uid: user.email,
@@ -216,19 +345,9 @@ function findUser(email) {
   });
 }
 
-// findUser("isaac.ng@case.edu");
 
-// Add user to group
+// Change all outputs to be returning the values in a list type object
 
-// Remove user from group
 
-// Add group to event, in the inout feild?
-
-// Add tag to event/edit 
-
-// Get all events for a user
-// Get groups of user, then get all events for a group, tie all these together, send a list of JSON objects?? somehow return multiple ones
-
-// Get events for a group
-
-// 
+// Sort by category for user
+// Parse to remove duplicates
