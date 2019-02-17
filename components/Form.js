@@ -26,6 +26,7 @@ export class Form extends React.Component {
   constructor(props) {
     super(props);
     this.setState = this.setState.bind(this);
+    this.submitForm = this.submitForm.bind(this);
     this.state = {
       name: "",
       start_date: new Date(),
@@ -42,13 +43,20 @@ export class Form extends React.Component {
     return value => this.setState({ [name]: value });
   }
 
+  submitForm() {
+    new_start = +this.state.start_date;
+    console.log(new_start);
+    this.setState({ start_date: new_start });
+    this.setState({ end_date: +this.state.end_date });
+    this.props.onSubmit(this.state);
+  }
   render() {
     return (
       <ScrollView style={{ marginTop: 30 }}>
         <View style={styles.formContainer}>
           <Input label="Name">
             <TextInput
-              placeholder="John Smith"
+              placeholder="Lets go to Jolly!"
               value={this.state.name}
               onChangeText={this.changeFormState("name")}
             />
@@ -97,10 +105,7 @@ export class Form extends React.Component {
         </View>
         <View style={styles.buttonContainer}>
           <Button onPress={this.props.onCancel} title="Cancel" />
-          <Button
-            onPress={() => this.props.onSubmit(this.state)}
-            title="Submit"
-          />
+          <Button onPress={() => this.submitForm()} title="Submit" />
         </View>
       </ScrollView>
     );

@@ -6,10 +6,12 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
-  DatePickerIOS
+  DatePickerIOS,
+  TouchableHighlight,
+  Alert
 } from "react-native";
 import { MapView } from "expo";
-import { Marker, ProviderPropType } from "react-native-maps";
+import { Callout, Marker, ProviderPropType } from "react-native-maps";
 import * as firebase from "firebase";
 
 // import {createStackNavigator, createAppContainer} from 'react-navigation';
@@ -89,15 +91,18 @@ class Map extends React.Component {
             formObj = Object.keys(childData.form).map(function(key) {
               return childData.form[key];
             });
+            console.log(formObj);
             this.setState({
               all_markers: [
                 ...this.state.all_markers,
                 {
                   category: formObj[0],
                   coordinate: formObj[1],
+                  // end_date: formObj[2],
                   description: formObj[2],
                   group: formObj[3],
                   name: formObj[4],
+                  // start_date: formObj[6],
                   users: formObj[5]
                 }
               ]
@@ -116,6 +121,8 @@ class Map extends React.Component {
     this.setState({ modalVisible: visible });
   }
 
+  eventPopup() {}
+
   onMapPress(e) {
     this.setState({
       markers: [
@@ -131,6 +138,7 @@ class Map extends React.Component {
   }
 
   onSubmit(form) {
+    console.log(form);
     form["coordinate"] = this.state.markers[0].coordinate;
     this.addEvent(form);
     this.setModalVisible(false);
@@ -138,6 +146,9 @@ class Map extends React.Component {
     this.readMarkers();
   }
 
+  markerClick() {
+    Alert.alert("You wish this button worked");
+  }
   render() {
     //this.setState({ retrieved_markers: true });
     if (this.state.markerButtonPressed) {
@@ -204,7 +215,23 @@ class Map extends React.Component {
             showsMyLocationButton
           >
             {this.state.all_markers.map(marker => (
-              <Marker coordinate={marker.coordinate} />
+              <Marker
+                title={marker.name}
+                description={marker.description}
+                coordinate={marker.coordinate}
+              >
+                <MapView.Callout>
+                  <TouchableHighlight
+                    onPress={() => this.markerClick()}
+                    underlayColor="white"
+                  >
+                    <View style={styles.calloutText}>
+                      <Text>{marker.name}</Text>
+                      <Text>{marker.description}</Text>
+                    </View>
+                  </TouchableHighlight>
+                </MapView.Callout>
+              </Marker>
             ))}
           </MapView>
           <View style={styles.buttonContainer}>

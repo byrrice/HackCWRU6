@@ -42,21 +42,6 @@ export default class Login extends React.Component {
     };
   }
 
-  // onLoginPress() {
-  //   this.state({ error: "", loading: true });
-
-  //   const { email, password } = this.state;
-  //   firebase
-  //     .auth()
-  //     .signInWithEmailAndPassword(email, password)
-  //     .then(() => {
-  //       this.state({ error: "", loading: false });
-  //     })
-  //     .catch(() => {
-  //       this.state({ error: "authentication failed", loading: false });
-  //     });
-  // }
-
   onSubmit = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password);
     Alert.alert("You've signed up!");
@@ -67,12 +52,19 @@ export default class Login extends React.Component {
   }
 
   loginUser = (email, password) => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(function(user) {
-        Alert.alert("You've successfully logged in!");
-      });
+    try {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(function(user) {
+          Alert.alert("You've successfully logged in!");
+        });
+    } catch (err) {
+      console.log(err.toString());
+      Alert.alert(
+        "The email and password you have entered are not formatted properly"
+      );
+    }
   };
 
   render() {
