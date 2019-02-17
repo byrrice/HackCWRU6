@@ -49,6 +49,7 @@ class Map extends React.Component {
     this.onRegionChange = this.onRegionChange.bind(this);
     this.addEvent = this.addEvent.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.setColor = this.setColor.bind(this);
     this.state = {
       region: {
         latitude: LATITUDE,
@@ -64,6 +65,21 @@ class Map extends React.Component {
     };
   }
 
+  setColor(category) {
+    if (category == "Free Food") {
+      color = "green";
+    }
+    if (category == "Danger Zone") {
+      color = "red";
+    }
+    if (category == "Sports") {
+      color = "orange";
+    }
+    if (category == "Social") {
+      color = "blue";
+    }
+    return color;
+  }
   addEvent(form) {
     firebase
       .database()
@@ -151,6 +167,7 @@ class Map extends React.Component {
       "Brings up popup with more detailed information about the event!"
     );
   }
+
   render() {
     //this.setState({ retrieved_markers: true });
     if (this.state.markerButtonPressed) {
@@ -221,6 +238,7 @@ class Map extends React.Component {
                 title={marker.name}
                 description={marker.description}
                 coordinate={marker.coordinate}
+                pinColor={this.setColor(marker.category)}
               >
                 <MapView.Callout>
                   <TouchableHighlight
