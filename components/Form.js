@@ -9,25 +9,14 @@ import {
     Modal,
     DatePickerIOS,
     TextInput,
-    Picker
+    Picker,
+    ScrollView,
 } from 'react-native';
-//import DateTimePicker from 'react-native-modal-datetime-picker';
 import { MapView } from 'expo'
 import { Marker, ProviderPropType } from 'react-native-maps';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
-
-
-// const MainNavigator = createStackNavigator({
-//   Map: {screen: MapScreen},
-//   CreateEvent: {screen: EventScreen},
-// });
-
-// const Event = t.struct({
-//   Name: t.String,
-//   StartTime: t.Tim,
-//   password: t.String,
-//   terms: t.Boolean
-// });
+import DropDownInput from './DropDownInput'
+import DateTimeInput from './DateTimeInput'
 
 export class Form extends React.Component {
     constructor(props) {
@@ -51,7 +40,7 @@ export class Form extends React.Component {
 
     render() {
         return (
-            <View style={{ marginTop: 30 }}>
+            <ScrollView style={{ marginTop: 30 }}>
                 <View style={styles.formContainer}>
                     <Input label="Name" error="not found">
                         <TextInput
@@ -73,13 +62,13 @@ export class Form extends React.Component {
                     </Input>
                     <Input label="End Date">
                         <DateTimeInput
-                            value={this.state.start_date}
+                            value={this.state.end_date}
                             onChange={this.changeFormState('end_date')}
                         />
                     </Input>
                     <Input label="Category">
                         <DropDownInput
-                            items={["Sports", "And stuff"]}
+                            items={["Sports", "Social", "Free Food"]}
                             value={this.state.category}
                             style={{ height: 50, width: 100 }}
                             onChange={this.changeFormState('category')} />
@@ -88,13 +77,13 @@ export class Form extends React.Component {
                         <TextInput
                             placeholder="Jane Doe"
                             value={this.state.users}
-                            onChangeText={this.changeFormState('name')} />
+                            onChangeText={this.changeFormState('users')} />
                     </Input>
                     <Input label="Add Group">
                         <TextInput
                             placeholder="Hack CWRU 6"
                             value={this.state.group}
-                            onChangeText={this.changeFormState('description')} />
+                            onChangeText={this.changeFormState('group')} />
                     </Input>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -107,90 +96,8 @@ export class Form extends React.Component {
                         title="Submit"
                     />
                 </View>
-            </View>
+            </ScrollView>
         );
-    }
-}
-
-class DateTimeInput extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = { open: false }
-        this.open = () => this.setState({ open: true })
-        this.close = () => this.setState({ open: false })
-    }
-
-    render() {
-        const { value, onChange } = this.props;
-        return (
-            <TouchableOpacity onPressIn={this.open}>
-                <TextInput onFocus={this.open} value={value ? value.toLocaleString() : 'Enter Date'} />
-                <Modal
-                    visible={this.state.open}
-                    onDismiss={this.close}
-                >
-                    <DatePickerIOS
-                        date={value}
-                        onDateChange={onChange}
-                        mode='datetime'
-                    />
-                  <View style={styles.buttonContainer}>
-                    <Button
-                        onPress={this.close}
-                        title="Okay"
-                    />
-                </View>
-                </Modal>
-            </TouchableOpacity>
-        )
-    }
-}
-
-class DropDownInput extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = { open: false }
-        this.open = () => this.setState({ open: true })
-        this.close = () => this.setState({ open: false })
-    }
-
-    render() {
-        const { items, value, onChange } = this.props;
-        return (
-            <TouchableOpacity onPressIn={this.open}>
-                <TextInput onFocus={this.open} value={value ? value : 'Enter Category'} />
-                <Modal
-                    visible={this.state.open}
-                    onDismiss={this.close}
-                >
-                    <Picker
-                        category={value}
-                        onValueChange={onChange}
-                        mode='dropdown'
-
-                    >
-                        {
-                            items.map(
-                                item =>
-                                    <Picker.Item
-                                        key={item}
-                                        label={item}
-                                        value={item}
-                                    />
-                            )
-                        }
-                    </Picker>
-                    <View style={styles.buttonContainer}>
-                    <Button
-                        onPress={this.close}
-                        title="Okay"
-                    />
-                </View>
-                </Modal>
-            </TouchableOpacity>
-        )
     }
 }
 
@@ -259,4 +166,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Map;
+export default Form;

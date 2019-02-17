@@ -1,19 +1,22 @@
 {
-  "name": "github.com/byrrice/hackcwru6",
+  "name": "github.com/byrrice/HackCWRU6",
   "version": "0.0.0",
   "description": "byrrice/HackCWRU6 @ Feb 16, 2019",
   "author": null,
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "expo": "^32.0.0",
-    "firebase-admin": "^7.0.0",
-    "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "bootstrap": "^4.0.0",
-    "jquery": "3",
+    "expo": "^32.0.0",
+    "firebase": "^5.8.3",
+    "firebase-admin": "^7.0.0",
+    "jquery": "^3.3.1",
     "popper.js": "^1.14.7",
+    "react": "^16.5.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-elements": "^1.0.0",
-    "react-native-modal": "^7.0.2"
+    "react-native-gesture-handler": "^1.0.15",
+    "react-native-modal": "^7.0.2",
+    "react-navigation": "^3.3.0"
   }
 }

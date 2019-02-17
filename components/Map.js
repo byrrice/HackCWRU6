@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -6,23 +6,27 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
-  DatePickerIOS,
-} from 'react-native';
-import { MapView } from 'expo'
-import { Marker, ProviderPropType } from 'react-native-maps';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+  DatePickerIOS
+} from "react-native";
+import { MapView } from "expo";
+import { Marker, ProviderPropType } from "react-native-maps";
+import {
+  FormLabel,
+  FormInput,
+  FormValidationMessage
+} from "react-native-elements";
 
 // import {createStackNavigator, createAppContainer} from 'react-navigation';
-import EventForm from './EventForm'
-import { Form } from './Form';
+import EventForm from "./EventForm";
+import { Form } from "./Form";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
 const LATITUDE = 41.5075;
 const LONGITUDE = -81.60844;
 const LATITUDE_DELTA = 0.007;
-const LONGITUDE_DELTA = 0.01;//LATITUDE_DELTA * ASPECT_RATIO;
+const LONGITUDE_DELTA = 0.01; //LATITUDE_DELTA * ASPECT_RATIO;
 let id = 0;
 
 function randomColor() {
@@ -51,11 +55,11 @@ class Map extends React.Component {
         latitude: LATITUDE,
         longitude: LONGITUDE,
         latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA
       },
       markers: [],
       markerButtonPressed: false,
-      modalVisible: false,
+      modalVisible: false
     };
   }
 
@@ -70,16 +74,18 @@ class Map extends React.Component {
         {
           coordinate: e.nativeEvent.coordinate,
           key: id++,
-          color: randomColor(),
-        },
+          color: randomColor()
+        }
       ],
-      modalVisible: true,
+      modalVisible: true
     });
     console.log("hello");
   }
 
   onSubmit(form) {
     console.log(form);
+    this.setModalVisible(false);
+    this.markerButtonPressed = false;
   }
 
   render() {
@@ -90,7 +96,9 @@ class Map extends React.Component {
             provider={this.props.provider}
             style={styles.map}
             initialRegion={this.state.region}
-            onPress={(e) => this.onMapPress(e)}
+            onPress={e => this.onMapPress(e)}
+            showsUserLocation
+            showsMyLocationButton
           >
             {this.state.markers.map(marker => (
               <Marker
@@ -107,12 +115,13 @@ class Map extends React.Component {
               animationType="slide"
               transparent={false}
               onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-              }}>
-              <Form onSubmit={this.onSubmit} onCancel={() =>
-                this.setModalVisible(false)
-              } />
-
+                Alert.alert("Modal has been closed.");
+              }}
+            >
+              <Form
+                onSubmit={this.onSubmit}
+                onCancel={() => this.setModalVisible(false)}
+              />
             </Modal>
           </View>
 
@@ -121,7 +130,7 @@ class Map extends React.Component {
               onPress={() => this.setState({ markerButtonPressed: false })}
               style={styles.bubble_red}
             >
-              <Text > Cancel </Text>
+              <Text> Cancel </Text>
             </TouchableOpacity>
             <View
               // onPress={() => this.setState({ markers: [] })}
@@ -132,8 +141,7 @@ class Map extends React.Component {
           </View>
         </View>
       );
-    }
-    else {
+    } else {
       return (
         <View style={styles.container}>
           <MapView
@@ -164,56 +172,56 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-  provider: ProviderPropType,
+  provider: ProviderPropType
 };
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center"
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFillObject
   },
   bubble: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: "rgba(255,255,255,0.7)",
     paddingHorizontal: 18,
     paddingVertical: 12,
-    borderRadius: 20,
+    borderRadius: 20
   },
   bubble_red: {
-    backgroundColor: 'rgba(255,0,0,0.7)',
+    backgroundColor: "rgba(255,0,0,0.7)",
     paddingHorizontal: 18,
     paddingVertical: 12,
-    borderRadius: 20,
+    borderRadius: 20
   },
   latlng: {
     width: 200,
-    alignItems: 'stretch',
+    alignItems: "stretch"
   },
   button: {
     width: 80,
     paddingHorizontal: 12,
-    alignItems: 'center',
-    marginHorizontal: 10,
+    alignItems: "center",
+    marginHorizontal: 10
   },
   exit_button: {
     width: 20,
     paddingHorizontal: 12,
-    alignItems: 'flex-start',
-    marginHorizontal: 10,
+    alignItems: "flex-start",
+    marginHorizontal: 10
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 20,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent"
   },
   formContainer: {
-    flexDirection: 'column',
-    marginVertical: 'auto',
-    backgroundColor: 'transparent',
-  },
+    flexDirection: "column",
+    marginVertical: "auto",
+    backgroundColor: "transparent"
+  }
 });
 
 export default Map;
