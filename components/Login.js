@@ -1,8 +1,24 @@
-// Login.js
+
+import { MapView } from "expo";
+import { Marker, ProviderPropType } from "react-native-maps";
+import {
+  FormLabel,
+  FormInput,
+  FormValidationMessage
+} from "react-native-elements";
+
 import React from "react";
-import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+import { StyleSheet, Text, TextInput, View, Button, Modal } from "react-native";
+import RegisterForm from './RegisterForm'
 export default class Login extends React.Component {
-  state = { email: "", password: "", errorMessage: null };
+  constructor(props) {
+    super(props);
+    this.setState = this.setState.bind(this);
+    this.state = { email: "", password: "", errorMessage: null, modalVisible: false };
+  }
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
   handleLogin = () => {
     // TODO: Firebase stuff...
     console.log("handleLogin");
@@ -32,8 +48,23 @@ export default class Login extends React.Component {
         <Button title="Login" onPress={this.handleLogin} />
         <Button
           title="Don't have an account? Sign Up"
-          onPress={() => this.props.navigation.navigate("SignUp")}
+          onPress={() => this.setModalVisible(true)}
         />
+      <View style={styles.formContainer}>
+        <Modal
+          visible={this.state.modalVisible}
+          animationType="slide"
+          transparent={false}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <RegisterForm
+            onSubmit={this.onSubmit}
+            onCancel={() => this.setModalVisible(false)}
+          />
+        </Modal>
+      </View>
       </View>
     );
   }
@@ -49,6 +80,7 @@ const styles = StyleSheet.create({
     width: "90%",
     borderColor: "gray",
     borderWidth: 1,
-    marginTop: 8
+    marginTop: 8,
+    textAlign: 'center'
   }
 });
