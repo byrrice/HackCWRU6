@@ -40,7 +40,7 @@ export class Form extends React.Component {
             description: "",
             tags: [],
             category: "",
-            users: [],
+            users: "",
             group: ""
         };
     }
@@ -84,7 +84,18 @@ export class Form extends React.Component {
                             style={{ height: 50, width: 100 }}
                             onChange={this.changeFormState('category')} />
                     </Input>
-
+                    <Input label="Add User">
+                        <TextInput
+                            placeholder="Jane Doe"
+                            value={this.state.users}
+                            onChangeText={this.changeFormState('name')} />
+                    </Input>
+                    <Input label="Add Group">
+                        <TextInput
+                            placeholder="Hack CWRU 6"
+                            value={this.state.group}
+                            onChangeText={this.changeFormState('description')} />
+                    </Input>
                 </View>
                 <View style={styles.buttonContainer}>
                     <Button
@@ -124,11 +135,12 @@ class DateTimeInput extends React.Component {
                         onDateChange={onChange}
                         mode='datetime'
                     />
-                    <TouchableOpacity onPress={this.close}>
-                        <Text>
-                            Okay
-                        </Text>
-                    </TouchableOpacity>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                        onPress={this.close}
+                        title="Okay"
+                    />
+                </View>
                 </Modal>
             </TouchableOpacity>
         )
@@ -170,11 +182,12 @@ class DropDownInput extends React.Component {
                             )
                         }
                     </Picker>
-                    <TouchableOpacity onPress={this.close}>
-                        <Text>
-                            Okay
-                        </Text>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                    <Button
+                        onPress={this.close}
+                        title="Okay"
+                    />
+                </View>
                 </Modal>
             </TouchableOpacity>
         )
