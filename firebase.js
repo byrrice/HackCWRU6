@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 // import firebase from '@firebase/app';
 // import '@firebase/firestore'
-var serviceAccount = require('/Users/dennis/Documents/HackCWRU6/pincwru-bb51d8cd21c5.json');
+var serviceAccount = require('C:\\Programming\\HackCWRU6\\pincwru-bb51d8cd21c5.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -48,8 +48,6 @@ var setAda = eventsRef.set({
   end_time: admin.firestore.Timestamp.fromDate(end_time),
   location: new admin.firestore.GeoPoint(0, 42),
   tags: ['sports_tag'],
-  users: ['dlin@test.com'],
-  groups: ['The Den by Dennis'],
   category: 'sport'
 });
 
@@ -62,8 +60,6 @@ addEvent({"name":"Team Lunch", "description": "Let's go to lunch tgt!",
 "end_time": new Date(2019, 2, 19, 2, 0, 0, 0), 
 "geo_location": new admin.firestore.GeoPoint(40.7308619, -73.9871558),
 "tags": "sports",
-"users": ["dlin@test.com", "rkp43@case.edu"],
-"group": null,
 "category": "sports"
 });
 
@@ -76,13 +72,11 @@ function addEvent(event) {
     end_time: event.end_time,
     geo_location: event.geo_location,
     tags: event.tags,
-    users: event.users,
-    group: event.group,
     category: event.category
   });
 }
 
-addGroup({"name":"TallBoys", "users": ["rkp43@case.edu"]})
+addGroup({"name":"TallBoys", "users": ["rkp43@case.edu"]});
 function addGroup(group){
   //test group
   var groupsRef = db.collection('groups').doc(group.name);
@@ -91,6 +85,34 @@ function addGroup(group){
     users: group.users
   });
 }
+
+addGroupEvent({"name":"TallBoys", "users": ["rkp43@case.edu"]}, 
+{"name":"Team Lunch", "description": "Let's go to lunch tgt!", 
+"start_time": new Date(2019, 2, 19, 12, 0, 0, 0), 
+"end_time": new Date(2019, 2, 19, 2, 0, 0, 0), 
+"geo_location": new admin.firestore.GeoPoint(40.7308619, -73.9871558),
+"tags": "sports",
+"category": "sports"
+});
+function addGroupEvent(group, event){
+  var groupEventsRef = db.collection('group_events').doc(group.name + ": " + event.name);
+  var setAda = groupEventsRef.set({
+    groupName: group.name,
+    eventName: event.name
+  });
+}
+addGroupEvent({"name": "The Den by Dennis"}, {"name":"Game On Monday"})
+addGroupEvent({"name": "TallBoys"}, {"name":"Game On Monday"})
+
+addUserEvent({"email":"rkp43@case.edu"}, {"name":"Team Lunch"})
+function addUserEvent(user, event){
+  var userEventsRef = db.collection('user_events').doc(user.email, event.name);
+  var setAda = userEventsRef.set({
+    userEmail: user.email,
+    eventName: event.name
+  });
+}
+
 
 function findGroup(group){
   var groupRef = db.collection('groups').doc(group);
@@ -108,7 +130,7 @@ function findGroup(group){
     });
 }
 
-findGroup('The Den by Dennis');
+// findGroup('The Den by Dennis');
 
 function findEvent(event) {
   var eventRef = db.collection('events').doc(event);
@@ -119,6 +141,7 @@ function findEvent(event) {
       }
       else {
         console.log(doc.id, '=>', doc.data());
+        return doc;
       }
     })
     .catch(err => {
@@ -126,12 +149,42 @@ function findEvent(event) {
     }); 
 }
 
-findEvent('Team Lunch');
+// findEvent('Team Lunch');
 
 
+function findGroupEvent(group_name, event_name){
+  var groupEventRef = db.collection('group_events').doc(group_name + ": " + event_name);
+  var getGroupEventRef = groupEventRef.get()
+    .then(doc => {
+      if(!doc.exists){
+        console.log('No such event/group pair!');
+      }
+      else {
+        console.log(findEvent(event_name));
+      }
+    });
+}
+// findGroupEvent('TallBoys', "Team Lunch");
 
+// find events of group
+function findAllGroupEvents(group_name){
+  var groupEventsRef = db.collection('group_events');
+  var query = groupEventsRef.where('groupName', '==', group_name).get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        console.log('No matching documents.');
+        return;
+      }
 
-
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', findGroupEvent(group_name, doc.eventName), doc.eventName);
+      });
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+  });
+}
+findAllGroupEvents('TallBoys');
 // AUTHETICATION FUNCTIONS
 
 
@@ -150,7 +203,7 @@ function createUser(user) {
     });
 }
 
-createUser({"first":"Isaac", "last": "Ng", "email": "isaac.ng@case.edu", "password": "password"});
+//createUser({"first":"Isaac", "last": "Ng", "email": "isaac.ng@case.edu", "password": "password"});
 
 function findUser(email) {
   admin.auth().getUser(email)
@@ -163,7 +216,7 @@ function findUser(email) {
   });
 }
 
-findUser("isaac.ng@case.edu");
+// findUser("isaac.ng@case.edu");
 
 // Add user to group
 

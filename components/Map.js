@@ -6,18 +6,22 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  DatePickerIOS,
 } from 'react-native';
 import { MapView } from 'expo'
 import { Marker, ProviderPropType } from 'react-native-maps';
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+
 // import {createStackNavigator, createAppContainer} from 'react-navigation';
 import EventForm from './EventForm'
+import { Form } from './Form';
 
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
 const LATITUDE = 41.5075;
 const LONGITUDE = -81.60844;
-const LATITUDE_DELTA =0.007;
+const LATITUDE_DELTA = 0.007;
 const LONGITUDE_DELTA = 0.01;//LATITUDE_DELTA * ASPECT_RATIO;
 let id = 0;
 
@@ -40,7 +44,8 @@ function randomColor() {
 class Map extends React.Component {
   constructor(props) {
     super(props);
-
+    this.setState = this.setState.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
     this.state = {
       region: {
         latitude: LATITUDE,
@@ -50,8 +55,12 @@ class Map extends React.Component {
       },
       markers: [],
       markerButtonPressed: false,
-      eventFormVisible: false
+      modalVisible: false,
     };
+  }
+
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
   }
 
   onMapPress(e) {
@@ -64,75 +73,93 @@ class Map extends React.Component {
           color: randomColor(),
         },
       ],
-      eventFormVisible: true,
+      modalVisible: true,
     });
     console.log("hello");
   }
 
+  onSubmit(form) {
+    console.log(form);
+  }
+
   render() {
-    if (this.state.markerButtonPressed){
-    return (
-      <View style={styles.container}>
-        <MapView
-          provider={this.props.provider}
-          style={styles.map}
-          initialRegion={this.state.region}
-          onPress={(e) => this.onMapPress(e)}
-        >
-          {this.state.markers.map(marker => (
-            <Marker
-              key={marker.key}
-              coordinate={marker.coordinate}
-              pinColor={marker.color}
-            />
-          ))}
-        </MapView>
-        
-        <EventForm parentModalVisible = {this.state.eventFormVisible}/>
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity
-            onPress={() => this.setState({ markerButtonPressed: false })}
-            style={styles.bubble_red}
+    if (this.state.markerButtonPressed) {
+      return (
+        <View style={styles.container}>
+          <MapView
+            provider={this.props.provider}
+            style={styles.map}
+            initialRegion={this.state.region}
+            onPress={(e) => this.onMapPress(e)}
           >
-          <Text > Cancel </Text>
-          </TouchableOpacity>
-          <View
-           // onPress={() => this.setState({ markers: [] })}
-            style={styles.bubble}
-          >
-            <Text> Tap map to set marker </Text>
+            {this.state.markers.map(marker => (
+              <Marker
+                key={marker.key}
+                coordinate={marker.coordinate}
+                pinColor={marker.color}
+              />
+            ))}
+          </MapView>
+
+          <View style={styles.formContainer}>
+            <Modal
+              visible={this.state.modalVisible}
+              animationType="slide"
+              transparent={false}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+              }}>
+              <Form onSubmit={this.onSubmit} onCancel={() =>
+                this.setModalVisible(false)
+              } />
+
+            </Modal>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={() => this.setState({ markerButtonPressed: false })}
+              style={styles.bubble_red}
+            >
+              <Text > Cancel </Text>
+            </TouchableOpacity>
+            <View
+              // onPress={() => this.setState({ markers: [] })}
+              style={styles.bubble}
+            >
+              <Text> Tap map to set marker </Text>
+            </View>
           </View>
         </View>
-      </View>
-    );
-  }
-  else{
-    return (
-      <View style={styles.container}>
-        <MapView
-          provider={this.props.provider}
-          style={styles.map}
-          initialRegion={this.state.region}
-                  >
-          {this.state.markers.map(marker => (
-            <Marker
-              key={marker.key}
-              coordinate={marker.coordinate}
-              pinColor={marker.color}
-            />
-          ))}
-        </MapView>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => this.setState({ markerButtonPressed: true})}
-            style={styles.bubble}
+      );
+    }
+    else {
+      return (
+        <View style={styles.container}>
+          <MapView
+            provider={this.props.provider}
+            style={styles.map}
+            initialRegion={this.state.region}
           >
-            <Text> Create Marker </Text>
-          </TouchableOpacity>
+            {this.state.markers.map(marker => (
+              <Marker
+                key={marker.key}
+                coordinate={marker.coordinate}
+                pinColor={marker.color}
+              />
+            ))}
+          </MapView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={() => this.setState({ markerButtonPressed: true })}
+              style={styles.bubble}
+            >
+              <Text> Create Marker </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    );
-  }
+      );
+    }
   }
 }
 
@@ -180,6 +207,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     marginVertical: 20,
+    backgroundColor: 'transparent',
+  },
+  formContainer: {
+    flexDirection: 'column',
+    marginVertical: 'auto',
     backgroundColor: 'transparent',
   },
 });
