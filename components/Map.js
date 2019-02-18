@@ -20,12 +20,12 @@ import { Form } from "./Form";
 
 const { width, height } = Dimensions.get("window");
 const firebaseConfig = {
-  apiKey: "AIzaSyAomUzviEzRitHhTK1IR9LJbfhU6_9CzBk",
-  authDomain: "justpincase-c0785.firebaseapp.com",
-  databaseURL: "https://justpincase-c0785.firebaseio.com",
-  projectId: "justpincase-c0785",
-  storageBucket: "justpincase-c0785.appspot.com",
-  messagingSenderId: "357323316713"
+  apiKey: 
+  authDomain:
+  databaseURL: 
+  projectId: 
+  storageBucket:
+  messagingSenderId: 
 };
 const ASPECT_RATIO = width / height;
 const LATITUDE = 41.5075;
