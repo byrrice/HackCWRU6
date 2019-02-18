@@ -21,12 +21,12 @@ import Map from "./Map";
 import * as firebase from "firebase";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAomUzviEzRitHhTK1IR9LJbfhU6_9CzBk",
-  authDomain: "justpincase-c0785.firebaseapp.com",
-  databaseURL: "https://justpincase-c0785.firebaseio.com",
-  projectId: "justpincase-c0785",
-  storageBucket: "justpincase-c0785.appspot.com",
-  messagingSenderId: "357323316713"
+  apiKey: 
+  authDomain: 
+  databaseURL:
+  projectId: 
+  storageBucket: 
+  messagingSenderId: 
 };
 firebase.initializeApp(firebaseConfig);
 
